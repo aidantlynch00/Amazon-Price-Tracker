@@ -8,7 +8,7 @@ class APT_Connector:
 
         config = {
             "user" : "root",
-            "password" : "lego4atl",
+            "password" : "r00tp4ss",
             "host" : "localhost",
             "database" : "amazon_price_tracker",
             "raise_on_warnings" : True
