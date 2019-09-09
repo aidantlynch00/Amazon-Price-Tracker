@@ -5,6 +5,7 @@ import numpy as np
 import os
 from time import sleep
 from tkinter import *
+import webbrowser as web
 #import matplotlib.backends.tkagg as tkagg
 #from matplotlib.backends.backend_agg import FigureCanvasAgg
 from apt_graph import APT_Graph
@@ -39,9 +40,20 @@ class Application(Frame):
         self.canvas.image = logo #Avoid python garbage collection from scooping up my img
 
         #Place graph on canvas
-        self.graph = APT_Graph(50, 125, 1500, 350, 130, master = self.canvas) # , init_data = apt_connector.get_data("sony_headphones_b07g4mnfs1")
+        self.graph = APT_Graph(50, 225, 1500, 350, 130, master = self.canvas) # , init_data = apt_connector.get_data("sony_headphones_b07g4mnfs1")
         #graph.add_data(apt_connector.get_data("sony_headphones_b07g4mnfs1"))
         self.canvas.graph = self.graph #Again :P
+
+        #TODO: Add widget for entry, submit, and select
+        self.url_label = Label(text = "URL: ", font = ("Courier New", 32), bg = "white", anchor = "nw", justify = "left", master = self.canvas)
+        self.url_label.place(x = 50, y = 650)
+        self.url_text_label = Label(text = current_url, font = ("Courier New", 32), fg = "blue", bg = "white", anchor = "nw", justify = "left", master = self.canvas)
+        self.url_text_label.place(x = 175, y = 650)
+        self.url_text_label.bind("<Button-1>", self.open_web)
+        self.item_label = Label(text = "Item: ", font = ("Courier New", 32), bg = "white", anchor = "nw", justify = "left", master = self.canvas)
+        self.item_label.place(x = 50, y = 150)
+        #TODO: Add functionality to extract product ASIN from Amazon webpage
+        #TODO: Add functionality for graph to update upon new selection
 
 
     def update_graph(self, table_name):
@@ -49,9 +61,14 @@ class Application(Frame):
         self.graph.draw_graph()
 
 
+    def open_web(self, *args):
+        web.open(current_url, new = 2, autoraise = True)
+
 
 #Init DB connector
 apt_connector = apt_connector.APT_Connector("amazon_price_tracker")
+current_table = apt_connector.list_tables()[0]
+current_url = "https://amazon.com/dp/" + current_table.split("_")[-1]
 
 #Init Window and App
 root = Tk()
@@ -62,7 +79,7 @@ app = Application(master = root)
 #app.update_graph("sony_headphones_b07g4mnfs1")
 
 while True:
-    app.after(10, app.update_graph("sony_headphones_b07g4mnfs1"))
+    app.after(10, app.update_graph(current_table))
     app.update_idletasks()
     app.update()
 

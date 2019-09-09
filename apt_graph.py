@@ -37,19 +37,26 @@ class APT_Graph:
             x = i * self.grid_size + self.xoff
             self.canvas.create_line(x, 0, x, self.height)  
 
+        self.canvas.create_line(self.xoff, self.height, self.width - self.xoff, self.height)
+
 
     def draw_points(self):
         for i in range(self.dates_available):
             if i > len(self.dates) - 1: 
                 return
             
+            price = self.prices[i]
             x = i * self.grid_size + self.xoff
-            y = self.get_y(self.prices[i])
+            y = self.get_y(price)
             self.canvas.create_line(self.xoff, y, x, y, dash = (5, 5))
             self.canvas.create_oval(x - 5, y - 5, x + 5, y + 5, fill = "orange", outline = "black")
+            self.canvas.create_text(x, self.height + 10, justify = "center", text = str(self.dates[i]))
+            price_str = "$" + str(price)
+            self.canvas.create_text(self.xoff - 5 * (len(price_str) - 1), y, justify = "left", text = price_str)
 
 
     def update_data(self, data):
+        if len(data) == 0: return
         self.dates = []
         self.prices = []
 
